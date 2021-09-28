@@ -1,0 +1,165 @@
+﻿@page
+@using test.Pages
+
+@model IndexModel
+@{
+    ViewData["Title"] = "Сотрудники";
+}
+@{
+    //controller.UserController controller = new test.controller.UserController(@Model.db);
+    //models.Employee employee = new models.Employee();
+}
+
+<script src="~/js/site.js" asp-append-version="true"></script><!--~/js/-->
+<!--   //_dog@model IEnumerable<test.models.Employee>-->
+
+
+<div class="text-center">
+    <h1 class="display-4">Список сотрудников</h1>
+</div>
+<br />
+<br />
+
+<div class="blockleft" css="align:left">
+    <h3>Отделы</h3>
+    <select id="">
+        @if (Model.listSubdivisions is not null)
+            @for (int i = 0; i < Model.listSubdivisions.Count; i++)
+            {
+                <option>@Model.listSubdivisions[i]</option>
+            }
+    </select>
+    <h3>Оргструктура</h3>
+    <select id="">
+        @if (Model.listOrgstructure is not null)
+            @for (int i = 0; i < Model.listOrgstructure.Count; i++)
+            {
+                <option>@Model.listOrgstructure[i]</option>
+            }
+    </select>
+</div>
+<div class="blockright" css="align:right"> <p>Поиск:</p><input id="search" maxlength="50" size="50" /></div>
+
+
+<br />
+<br />
+<!--<form class="formTable">-->
+<table class="tableEmployees">
+    <tr><th>Имя</th><th>Должность</th><th>Подразделение</th><th>Телефон</th><th>email</th></tr>
+    <!--d@foreach (var item in Model.Name)
+    {
+        <tr><td>d@item.Name</td><td>d@item.position</td><td>d@item.phone</td></tr>
+    }
+    -->
+    @for (int i = 0; i < @Model.Name.Count; i++)
+    {
+        <tr>
+            <!--  <td>Model.id[i]</td>-->
+            <td id="tdName">&nbsp;@Model.Name[i]</td>
+            <td id="#tdPos">&nbsp;@Model.position[i]</td>
+            <td>&nbsp;@Model.subdivisionEmployee[i]</td>
+            <td>&nbsp;@Model.phone[i]</td>
+            <td>&nbsp;@Model.email[i]</td>
+            <td>
+                <input type='submit' value="Редактировать" class="linkUpdate" asp-route-id="@Model.id[i]" asp-route-subdivision="@Model.subdivision_id[i]"
+                       asp-route-org="@Model.org_id[i]" asp-route-Name="@Model.Name[i]" asp-route-position="@Model.position[i]" asp-route-phone="@Model.phone[i]"
+                       asp-route-email="@Model.email[i]" asp-page-handler="Update" method="post" onclick="" />
+            </td>
+            <td>
+                <!--<a class="linkDelete" asp-route-id="@Model.id[i]" value="Model.id[i]" asp-page-handler="Delete" method="post">Удалить</a>-->
+                <input type='submit' value="Удалить" class="linkDelete" asp-route-id="@Model.id[i]" asp-page-handler="Delete" method="post" onclick="" />
+            </td>
+        </tr>
+    }
+</table>
+<!--</form>-->
+<br />
+<br />
+<h3><b>Добавить сотрудника:</b></h3>
+<br />
+<!--<a asp-action="CreateSub">Добавить подразделение</a><br />
+<a asp-action="CreateOrg">Добавить оргструктуру</a><br />-->
+<form id="createForm" method="post" action="">
+    <!-- action="/Index?handler=button"-->
+    <p>Имя</p><input id="Name" name="Name" maxlength="25" size="40" value="" />
+    <p>Должность</p><input id="position" name="position" maxlength="25" size="40" />
+    <p>Подразделение</p>
+    <select id="subdivision_id" name="subdivision_id">
+
+        @for (int i = 0; i < @Model.subdivisionsDictionary.Count; i++)
+        {
+            <option value=@Model.subdivisionsDictionary.Keys.ToList()[i]>@Model.subdivisionsDictionary.Values.ToList()[i]</option>
+        }
+    </select>
+    <p>Оргструктура</p>
+    <select id="org_id" name="org_id">
+        @foreach (var item in @Model.orgDictionary)
+        {
+            <option value=@item.Key>@item.Value</option>
+        }
+    </select>
+    <p>Телефон</p><input id="phone" name="phone" maxlength="25" size="40" />
+    <p>Емейл</p><input id="email" name="email" maxlength="25" size="40" />
+    <br /><br />
+    <input type='submit' value="Добавить сотрудника" id="addBtn" asp-page-handler="create" />
+</form>
+
+
+@section Scripts {
+
+    <!--<script src="/js/jquery-3.6.0.min.js" type="text/javascript"></script>-->
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            jQuery(function ($) {
+
+                //$('input#search').on('keyup', function (e) {
+                //var findString;
+                $('input#search').keyup(function (e) {
+                    //var k = e.keyCode;
+                    var k = $(this).text();
+                    //$("table.tableEmployees>td").text().find($('input#search').val()).css('color', 'red');
+                    $("table.tableEmployees tr").each(function (index) {
+                        //text().css('color', 'red');
+                        if (index != 0) {
+
+                            $td = $(this).find("td:first");
+                            $row = $(this).find("td:first").text();
+
+                            //if ($row == k) alert($row);
+                            if ($row == k) $row.css('color', 'red');
+                            if ($row == k) $td.addClass('find');
+                        }
+                    });
+                });
+
+                $('input#addBtn').click(function (e) {
+                    //n@employee.subdivision_id = $('select#subdivisionId option:selected').val();
+
+                    //$("form.formTable").load("test/index.html .tableEmployees");
+                    //alert('777');
+
+                });
+                $('input.linkDelete').click(function (e) {
+                });
+
+                $('input.linkUpdate').click(function (e) {
+                    alert($(this).attr('value'));
+                    $(this).parent("td#tdName").add("<input id='Name'/>");
+                    $(this).parent("td#tdPos").add("<input id='position'/>");
+                    //$(this).parent("td#tdPhone").add("<input id='phone'/>");
+                    //$(this).parent("td#tdMail").add("<input id='mail'/>");
+                });
+                // $('a.linkDelete').click(function (e) {
+                //     alert($(this).attr('value'));
+                // });
+            });
+
+
+        });
+
+
+    </script>
+}
+

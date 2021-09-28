@@ -1,0 +1,240 @@
+﻿@page
+@using test.Pages
+
+@model IndexModel
+@{
+    ViewData["Title"] = "Сотрудники";
+}
+@{
+    //controller.UserController controller = new test.controller.UserController(@Model.db);
+    //models.Employee employee = new models.Employee();
+}
+
+<script src="~/js/site.js" asp-append-version="true"></script><!--~/js/-->
+<!--   //_dog@model IEnumerable<test.models.Employee>-->
+
+
+<div class="text-center">
+    <h1 class="display-4">Список сотрудников</h1>
+</div>
+<br />
+<br />
+
+<div class="blockleft">
+    <h3>Отделы</h3>
+    <select id="">
+        @if (Model.listSubdivisions is not null)
+            @for (int i = 0; i < Model.listSubdivisions.Count; i++)
+            {
+                <option>@Model.listSubdivisions[i]</option>
+            }
+    </select>
+    <h3>Оргструктура</h3>
+    <select id="">
+        @if (Model.listOrgstructure is not null)
+            @for (int i = 0; i < Model.listOrgstructure.Count; i++)
+            {
+                <option>@Model.listOrgstructure[i]</option>
+            }
+    </select>
+</div>
+<br />
+<br />
+<div class="blockright"> <p>Поиск:</p><input id="search" maxlength="50" size="50" /></div>
+<br />
+<br />
+<form class="formTable" method="post" action="">
+    <table class="tableEmployees">
+        <tr><th>Имя&nbsp;&nbsp;</th><th>Должность&nbsp;</th><th>Подразделение&nbsp;</th><th>Оргструктура&nbsp;</th><th>Телефон&nbsp;&nbsp;</th><th>email&nbsp;&nbsp;</th></tr>
+        <!--d@foreach (var item in Model.Name)
+        {
+            <tr><td>d@item.Name</td><td>d@item.position</td><td>d@item.phone</td></tr>
+        }
+        -->
+        @for (int i = 0; i < @Model.Name.Count; i++)
+        {
+            <tr id="tr_@Model.id[i]">
+                <!--  <td>Model.id[i]</td>-->
+                <td id="nameTd">@Model.Name[i]</td>
+                <td id="posTd">@Model.position[i]</td>
+                <td id="subTd">@Model.subdivisionEmployee[i]</td>
+                <td id="orgTd">@Model.orgEmployee[i]</td>
+                <td id="phTd">@Model.phone[i]</td>
+                <td id="emTd">@Model.email[i]</td>
+                <td>
+                    <!--<input type='submit' value="Редактировать" class="linkUpdate" asp-route-id="h@Model.id[i]" asp-route-subdivision="h@Model.subdivision_id[i]"
+                    asp-route-org="h@Model.org_id[i]" asp-route-Name="h@Model.Name[i]" asp-route-position="h@Model.position[i]" asp-route-phone="h@Model.phone[i]"
+                    asp-route-email="h@Model.email[i]" asp-page-handler="Update" method="post" onclick="" />-->
+                    <input type="button" class="linkUpdate" value="Редакторовать" id="@Model.id[i]" subdivision_id="@Model.subdivision_id[i]"
+                           org="@Model.org_id[i]" Name="@Model.Name[i]" position="@Model.position[i]" phone="@Model.phone[i]" email="@Model.email[i]" />
+                    <input type='submit' id="saveUpdate" hidden="hidden" value="Сохранить" asp-route-id="@Model.id[i]" asp-page-handler="Update" method="post" />
+                </td>
+                <td>
+                    <!--<a class="linkDelete" asp-route-id="g@Model.id[i]" asp-page-handler="Delete" method="post" onclick="">Удалить</a>-->
+                    <input type='submit' value="Удалить" class="linkDelete" asp-route-id="@Model.id[i]" asp-page-handler="Delete" method="post" onclick="" />
+                    <input type="button" value="Отмена" class="linkCancel" hidden="hidden" />
+                </td>
+            </tr>
+        }
+    </table>
+</form>
+<br />
+<!--<form method="post" id="test">
+    <input type='submit' value="Test" class="testUpdate" asp-route-id="" asp-route-subdivision=""
+           asp-route-org="" asp-route-Name="" asp-route-position="" asp-route-phone=""
+           asp-route-email="" asp-page-handler="Update" method="post" onclick="" />
+    <input type='button' id="testBtn" value="Test2" hidden="hidden" onclick="" />
+</form>-->
+<br />
+<h3>Добавить сотрудника:</h3>
+<br />
+<!--<a asp-action="CreateSub">Добавить подразделение</a><br />
+<a asp-action="CreateOrg">Добавить оргструктуру</a><br />-->
+<form id="createForm" method="post" action="">
+    <!-- action="/Index?handler=button"-->
+    <p>Имя</p><input id="Name" name="Name" maxlength="25" size="40" value="" />
+    <p>Должность</p><input id="position" name="position" maxlength="25" size="40" />
+    <p>Подразделение</p>
+    <select id="subdivision_id" name="subdivision_id">
+
+        @for (int i = 0; i < @Model.subdivisionsDictionary.Count; i++)
+        {
+            <option value=@Model.subdivisionsDictionary.Keys.ToList()[i]>@Model.subdivisionsDictionary.Values.ToList()[i]</option>
+        }
+    </select>
+    <p>Оргструктура</p>
+    <select id="org_id" name="org_id">
+        @foreach (var item in @Model.orgDictionary)
+        {
+            <option value=@item.Key>@item.Value</option>
+        }
+    </select>
+    <p>Телефон</p><input id="phone" name="phone" maxlength="25" size="40" />
+    <p>Емейл</p><input id="email" name="email" maxlength="25" size="40" />
+    <br /><br />
+    <input type='submit' value="Добавить сотрудника" id="addBtn" asp-page-handler="create" />
+</form>
+
+
+
+
+@section Scripts {
+
+    <script src="/js/jquery-3.6.0.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            jQuery(function ($) {
+
+                $('input#search').keyup(function (e) {
+                    $("table.tableEmployees tr td").removeClass('find');
+                    //$("table.tableEmployees tr td:first").addClass("find");
+                    //$("table.tableEmployees tr td:first:contains('Иванов')").addClass("find");
+
+                    //var k = e.keyCode;
+                    var k = $(this).val();
+                    var kk = "";
+
+                    if (e.keyCode >= 65 && e.keyCode <= 90 && k.length > 1) {
+
+                        kk = k.charAt(0).toUpperCase() + k.slice(1, k.length);
+
+                        $("table.tableEmployees tr td:contains(" + k + ")").addClass("find");
+                        $("table.tableEmployees tr td:contains(" + kk + ")").addClass("find");
+                    }
+                    /*$("table.tableEmployees tr").each(function (index) {
+                        if (index != 0 && (e.keyCode >= 65 && e.keyCode <= 90)) {
+
+                            $td = $(this).find("td:first");
+                            $row = $(this).find("td:first").text();
+                            //alert($row);
+                            if ($row.find(k)) alert($row);
+
+                            //if ($row == k) $td.addClass("find");
+                        }
+                    });*/
+                });
+
+
+                /*повесим обработчики на динамически созданные элементы*/
+                // $(document).on('click', '#saveUpdateId', function (e) {
+
+                //$('#stringName').add($('#MailUpd').val());
+                //$('#lblUpdate').attr('',$('#MailUpd').val());
+                //$('.formTable').attr('asp-route-email', $('#MailUpd').val());
+
+                //$('#btnUpdate').attr('action', '/Index?handler=Update&id=' + id + '&subdivision=' + $('#subtd select option:selected').val() + '&org=' + org_id + '&name=' + $('#nameUpd').val() + '&position=' + $('#PosUpd').val() + '&phone=' + $('#PhoneUpd').val() + '&email=' + $('#MailUpd').val());
+                //$.ajax({
+                //     type: "POST",
+                //    url: '/Index?handler=Update&id=' + id + '&subdivision=' + $('#subtd select option:selected').val() + '&org=' + org_id + '&name=' + $('#nameUpd').val() + '&position=' + $('#PosUpd').val() + '&phone=' + $('#PhoneUpd').val() + '&email=' + $('#MailUpd').val(),
+                // });
+                //$('.testUpdate').click();
+                //  });
+
+
+
+                $('input.linkUpdate').click(function (e) {
+
+                    if ($('#nameUpd').length == 0) {
+                        //$('#nameUpd').parentsUntil('tr').reload(); //location.reload();
+                        //$('#nameUpd').empty();
+
+                        var id = $(this).attr('id');
+                        var name = $(this).attr('Name');
+                        var pos = $(this).attr('position');
+                        var subdivision_id = $(this).attr('subdivision_id');
+                        var org_id = $(this).attr('org');
+                        var ph = $(this).attr('phone');
+                        var em = $(this).attr('email');
+
+                        //var button = "<input type=\"submit\" id=\"saveUpdateId\" value='Сохранить' asp-route-id=" + id + " asp-route-subdivision=" + $('#subtd select option:selected').val() + " asp-route-org=" + org_id + " asp-route-Name=" + name + " asp-route-position=" + pos + " asp-route-phone=" + ph + " asp-route-email=" + em + " asp-page-handler=\"Update\" method = \"post\" onclick=\"\"/>";
+
+                        var select = $('select#subdivision_id').clone();
+                        var selectOrg = $('select#org_id').clone();
+
+                        //var newrow = $('<tr><td><input id="nameUpd" value="' + name + '"/></td><td><input id="PosUpd" value="' + pos + '"/></td><td id=\'subtd\'></td><td><input id="PhoneUpd" value="' + ph + '"/></td><td><input id="MailUpd"  value="' + em + '"/></td><td><form id="btnUpdate"  method="post">' + button + '</form></td></tr > ');
+                        //$("#tr_" + id).after(newrow);
+                        //$('#subtd').append(select);
+                        //$('#subtd select option[value=' + subdivision_id + ']').attr('selected', 'selected');
+
+
+                        $("#tr_" + id + ' #nameTd').empty().append('<input id="nameUpd" name="nameUpd" value="' + name + '"/>');
+                        $("#tr_" + id + ' #posTd').empty().append('<input id="posUpd" name="posUpd" value="' + pos + '"/>');
+
+                        select.find('option[value = ' + subdivision_id + ']').attr('selected', 'selected');
+                        $("#tr_" + id + ' #subTd').empty().append(select);
+                        selectOrg.find('option[value = ' + org_id + ']').attr('selected', 'selected');
+                        $("#tr_" + id + ' #orgTd').empty().append(selectOrg);
+
+                        $("#tr_" + id + ' #phTd').empty().append('<input id="phUpd" name="phUpd" value="' + ph + '"/>');
+                        $("#tr_" + id + ' #emTd').empty().append('<input id="emUpd" name="emUpd" value="' + em + '"/>');
+                        $("#tr_" + id + ' .linkUpdate').hide();
+                        $("#tr_" + id + ' .linkDelete').hide();
+                        $("#tr_" + id + ' #saveUpdate').removeAttr("hidden");
+                        $("#tr_" + id + ' .linkCancel').removeAttr("hidden");
+
+                        //location.reload();
+                        //$("form.formTable").load("test/index.html .tableEmployees");
+                        //var href = $(this).attr('href');
+                        //$.post(href);
+                    }
+                    //$('.formTable').attr('action', '/Index?handler=Update&id=' + id + '&subdivision=' + $('#subtd select option:selected').val() + '&org=' + org_id + '&name=' + $('#nameUpd').val() + '&position=' + $('#posUpd').val() + '&phone=' + $('#phUpd').val() + '&email=' + $('#emUpd').val());
+                });
+
+                //$('#testBtn').click(function (e) {
+                //    $('.testUpdate').click();
+                //});
+
+                $('input.linkCancel').click(function (e) {
+                    location.reload();
+                });
+            });
+
+
+        });
+
+
+    </script>
+}
+
